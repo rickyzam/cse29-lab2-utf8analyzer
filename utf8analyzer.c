@@ -134,6 +134,19 @@ void capitalize_ascii(char str[]) {
 void length(char str[]){
 	printf("Length in bytes: %lu\n", strlen(str));
 }
+uint8_t codepoint_size(char string[]) {
+        if (string[0] == '\0')
+                return 0;
+        int codepoint_size = 0;
+        for(int j = 0;(string[0]>>(7-j))&1!=0;j++){
+                codepoint_size++;}
+        if(codepoint_size==0){
+                return 1;}
+        if(1>codepoint_size>=4){
+                return -1;}
+        else{
+                return codepoint_size;}
+}
 
 int32_t utf8_strlen(char str[]) {
         int count = 0;
@@ -160,10 +173,10 @@ int32_t codepoint_at(char str[], int32_t byte_index) {
                 }
                 return result;
         }
-void utf_8(char string[]){
+void utf8info(char string[]){
         printf("Number of Codepoints: %d\n", utf8_strlen(string));
         int count = 0;
-        printf("Codepoints are: ")
+        printf("Codepoints are: ");
         for(int i =0; i<sizeof(string); i++){
                 unsigned char byte = (unsigned char)string[i];
                 if (byte<0x80||byte>0xBF){
@@ -171,7 +184,7 @@ void utf_8(char string[]){
                 }
         }
         printf("\n");
-        for(int i = 0; i<sizeof(string); i++){
+        for(int i = 0; i<sizeof(string)); i++){
                 unsigned char byte = (unsigned char)string[i];
                 if (byte<0x80||byte>0xBF){
                         printf("%d ", codepoint_size(byte));
@@ -188,7 +201,7 @@ int main(int argc, char *argv[]) {
     is_ascii(argv[1]); // valid ascii or not 
     capitalize_ascii(argv[1]); //ugrading the string 
     length(argv[1]); // length of string in bytes.
-    utf8(argv[1]);
+    utf8info(argv[1]);
     first6Substring(argv[1]);
     animalEmojis(argv[1]);
 
