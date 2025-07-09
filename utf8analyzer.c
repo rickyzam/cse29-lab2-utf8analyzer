@@ -184,7 +184,7 @@ void utf8info(char string[]){
                 }
         }
         printf("\n");
-        for(int i = 0; i<sizeof(string)); i++){
+        for(int i = 0; i<sizeof(string); i++){
                 unsigned char byte = (unsigned char)string[i];
                 if (byte<0x80||byte>0xBF){
                         printf("%d ", codepoint_size(byte));
