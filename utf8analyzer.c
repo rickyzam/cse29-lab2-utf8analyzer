@@ -134,11 +134,11 @@ void capitalize_ascii(char str[]) {
 void length(char str[]){
 	printf("Length in bytes: %lu\n", strlen(str));
 }
-uint8_t codepoint_size(char string[]) {
-        if (string[0] == '\0')
+uint8_t codepoint_size(char c) {
+        if (c == '\0')
                 return 0;
         int codepoint_size = 0;
-        for(int j = 0;(string[0]>>(7-j))&1!=0;j++){
+        for(int j = 0;(c>>(7-j))&1!=0;j++){
                 codepoint_size++;}
         if(codepoint_size==0){
                 return 1;}
