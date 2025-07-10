@@ -175,6 +175,65 @@ void capitalize_ascii(char str[]) {
 void length(char str[]){
 	printf("Length in bytes: %lu\n", strlen(str));
 }
+uint8_t codepoint_size(char c) {
+        if (c == '\0')
+                return 0;
+        int codepoint_size = 0;
+        for(int j = 0;(c>>(7-j))&1!=0;j++){
+                codepoint_size++;}
+        if(codepoint_size==0){
+                return 1;}
+        if(1>codepoint_size>=4){
+                return -1;}
+        else{
+                return codepoint_size;}
+}
+
+int32_t utf8_strlen(char str[]) {
+        int count = 0;
+        for(int i = 0; str[i]!='\0';i++){
+                unsigned char byte = (unsigned char)str[i];
+                if(byte<0x80||byte>0xBF){
+                        count++;}
+        }
+        return count;
+}
+int32_t codepoint_at(char str[], int32_t byte_index) {
+        int32_t result = 0;
+        char first_byte = str[byte_index];
+        if (((first_byte>>6)&3)==2){
+                return -1;}
+        else{
+                uint8_t size = codepoint_size(first_byte);
+                first_byte = first_byte << size;
+                first_byte = first_byte >>size;
+                result |= first_byte;
+                for(int i = 1; i<size; i++){
+                        result = result<<6;
+                        result |= str[byte_index+i]&127;
+                }
+                return result;
+        }
+}
+void utf8info(char string[]){
+        printf("Number of Codepoints: %d\n", utf8_strlen(string));
+        int count = 0;
+        printf("Codepoints are: ");
+        for(int i =0; i<sizeof(string); i++){
+                unsigned char byte = (unsigned char)string[i];
+                if (byte<0x80||byte>0xBF){
+                        printf("%d ", codepoint_at(string, i));
+                }
+        }
+        printf("\n");
+        for(int i = 0; i<sizeof(string); i++){
+                unsigned char byte = (unsigned char)string[i];
+                if (byte<0x80||byte>0xBF){
+                        printf("%d ", codepoint_size(byte));
+                }
+        }
+
+}
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -184,6 +243,7 @@ int main(int argc, char *argv[]) {
     is_ascii(argv[1]); // valid ascii or not 
     capitalize_ascii(argv[1]); //ugrading the string 
     length(argv[1]); // length of string in bytes.
+    utf8info(argv[1]);
     first6Substring(argv[1]);
     animalEmojis(argv[1]);
 
