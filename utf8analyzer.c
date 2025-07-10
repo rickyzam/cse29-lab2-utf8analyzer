@@ -5,6 +5,9 @@
 #include <stdint.h>
 
 // prints a substring of the input string containing only the first 6 codepoints
+// 
+
+void encode_utf8(uint32_t num, char dest[]);
 void first6Substring(const char str[])
 {
     const char *p = str;
@@ -51,54 +54,92 @@ void animalEmojis(const char str[])
 {
     const unsigned char *p = (const unsigned char *)str;
     int cp_count = 0;
+    char dest[100] = {};
 
     while (*p) {
-    uint32_t codepoint = 0;
-    if (*p < 0x80) {
-	codepoint = *p;
-    } else if ((*p & 0xE0) == 0xC0) {
-	codepoint = (*p & 0x1F) << 6;
-	p++;
-	codepoint |= (*p & 0x3F);
-    } else if ((*p & 0xF0) == 0xE0) {
-	codepoint = (*p & 0x0F) << 12;
-	p++;
-	codepoint |= (*p & 0x3F) << 6;
-	p++;
-	codepoint |= (*p & 0x3F);
-    } else if ((*p & 0xF8) == 0xF0) {
-	codepoint = (*p & 0x07) << 18;
-	p++;
-	codepoint |= (*p & 0x3F) << 12;
-	p++;
-	codepoint |= (*p & 0x3F) << 6;
-	p++;
-	codepoint |= (*p & 0x3F);
-    }
+            uint32_t codepoint = 0;
+            if (*p < 0x80) {
+                codepoint = *p;
+            } else if ((*p & 0xE0) == 0xC0) {
+                codepoint = (*p & 0x1F) << 6;
+                p++;
+                codepoint |= (*p & 0x3F);
+            } else if ((*p & 0xF0) == 0xE0) {
+                codepoint = (*p & 0x0F) << 12;
+                p++;
+                codepoint |= (*p & 0x3F) << 6;
+                p++;
+                codepoint |= (*p & 0x3F);
+            } else if ((*p & 0xF8) == 0xF0) {
+                codepoint = (*p & 0x07) << 18;
+                p++;
+                codepoint |= (*p & 0x3F) << 12;
+                p++;
+                codepoint |= (*p & 0x3F) << 6;
+                p++;
+                codepoint |= (*p & 0x3F);
+            }
 
-    // check if animal emoji
-    if ((codepoint >= 0x1F400 && codepoint <= 0x1F43F) ||
-	(codepoint >= 0x1F980 && codepoint <= 0x1F9AE)) {
-	// printf("%s\n", *p);
-    } else {
-    }
+            // check if animal emoji
+            if ((codepoint >= 0x1F400 && codepoint <= 0x1F43F) ||
+                (codepoint >= 0x1F980 && codepoint <= 0x1F9AE)) {
+		    encode_utf8(codepoint, dest);
+		    printf("%s ", dest);
+            } else {
+            }
 
-        // next codepoint
-        if (*p < 0x80) {
-            p++;
-        } else if ((*p & 0xE0) == 0xC0) {
-            p += 2;
-        } else if ((*p & 0xF0) == 0xE0) {
-            p += 3;
-        } else if ((*p & 0xF8) == 0xF0) {
-            p += 4;
-        } else {
-            // Invalid UTF-8, just skip this byte
-            p++;
-        }
-        cp_count++;
+        if (*p < 0x80) { 
+            p++; 
+        } else if ((*p & 0xE0) == 0xC0) { 
+            p += 2; 
+        } else if ((*p & 0xF0) == 0xE0) { 
+            p += 3; 
+        } else if ((*p & 0xF8) == 0xF0) { 
+            p += 4; 
+        } else { 
+            // Invalid UTF-8, just skip this byte 
+            p++; 
+        } 
     }
+    puts("\n");
 }
+
+void encode_utf8(uint32_t num, char dest[]) {
+        //TODO: Complete this function
+
+        const uint8_t leading_mask[5] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0 };
+
+        if (num <= 0x7F)
+        {
+                dest[0] = num;
+                dest[1] = dest[2] = dest[3] = 0;
+                return;
+        }
+
+        int num_bytes;
+        if (num <= 0x7FF) num_bytes = 2;
+        else if (num <= 0xFFFF) num_bytes = 3;
+        else if (num <= 0x10FFFF) num_bytes = 4;
+        else
+        {
+                dest[0] = dest[1] = dest[2] = dest[3] = 0;
+                return;
+        }
+
+        for (int i = num_bytes - 1; i > 0; i--) {
+                dest[i] = (char)((num & 0x3F) | 0x80);
+                num >>= 6;
+        }
+
+        dest[0] = (char)(leading_mask[num_bytes] | num);
+
+        for (int i = num_bytes; i < 4; i++)
+        {
+                dest[i] = 0;
+        }
+
+}
+
 
 // checks if string is ascii or not 
 uint8_t is_ascii(char string[]) {
@@ -148,5 +189,4 @@ int main(int argc, char *argv[]) {
 
     // incCdptAtIndex3(argv[1]);
     // implement the UTF-8 analyzer here
-
 }
