@@ -173,6 +173,7 @@ int32_t codepoint_at(char str[], int32_t byte_index) {
                 }
                 return result;
         }
+}
 void utf8info(char string[]){
         printf("Number of Codepoints: %d\n", utf8_strlen(string));
         int count = 0;
